@@ -1,5 +1,7 @@
-package com.webflux.study.exam02;
+package com.webflux.study.exam02.controller;
 
+import com.webflux.study.exam02.Employee;
+import com.webflux.study.exam02.EmployeeRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
