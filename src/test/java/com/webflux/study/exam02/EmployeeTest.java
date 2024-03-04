@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import static org.mockito.BDDMockito.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmployeeMain.class)
-public class EmployeeTest {
+class EmployeeTest {
 
     @Autowired
     private EmployeeConfig employeeConfig;
