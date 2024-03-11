@@ -2,17 +2,19 @@ package com.webflux.study.exam02;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.BDDMockito.given;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmployeeMain.class)
 public class EmployeeTest {
+
+    private static final Logger log = LoggerFactory.getLogger(EmployeeTest.class);
 
     @Autowired
     private EmployeeConfig employeeConfig;
