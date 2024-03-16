@@ -18,6 +18,10 @@ public class EmployeeHandler {
     public Mono<ServerResponse> findEmployeeById(ServerRequest request) {
         Mono<Employee> employee = employeeRepository.findEmployeeById(request.pathVariable("id"));
 
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(employee.block()); // TODO .. Mono.block...
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(employee.block());
+    }
+
+    public Mono<ServerResponse> findAllEmployees(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(employeeRepository.findAllEmployees(), Employee.class);
     }
 }

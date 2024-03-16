@@ -13,6 +13,7 @@ public class EmployeeConfig {
     RouterFunction<ServerResponse> getEmployeeByIdRoute(EmployeeHandler handler) {
         return RouterFunctions.route()
                 .GET("/employees/{id}", request -> handler.findEmployeeById(request))
+                .GET("/employees", request -> handler.findAllEmployees(request))
                 .build();
     }
 }
