@@ -36,10 +36,15 @@ public class WebClientConfig {
 
         return WebClient.builder()
                 .uriBuilderFactory(factory)
-                .baseUrl("") // TODO
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .filter(ExchangeFilterFunction.ofRequestProcessor(request -> Mono.just(request))) // TODO Req log filter
-                .filter(ExchangeFilterFunction.ofResponseProcessor(response -> Mono.just(response))) // TODO Res log filter
+                .filter(ExchangeFilterFunction.ofRequestProcessor(
+                        request -> {
+                            log.info("Request: {} {}", request.method(), request.url());
+                            request.headers().forEach((name, values) -> values.forEach(value -> log.info("{} : {}", name, value)));
+                            return Mono.just(request);
+                        }
+                ))
+                .filter(ExchangeFilterFunction.ofResponseProcessor(Mono::just))
                 .defaultHeader("Content-type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .build();
     }

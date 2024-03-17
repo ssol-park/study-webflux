@@ -1,5 +1,6 @@
 # References
  - WebFlux : https://docs.spring.io/spring-framework/docs/5.3.10/reference/html/web-reactive.html#webflux
+ - WebClient : https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html
  - WebTestClient : https://docs.spring.io/spring-framework/reference/testing/webtestclient.html
 
 ## exam01
