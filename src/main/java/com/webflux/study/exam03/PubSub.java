@@ -4,88 +4,67 @@ import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-@Slf4j
+import static com.webflux.study.exam03.PubSubUtil.iterPub;
+import static com.webflux.study.exam03.PubSubUtil.loggingSub;
+
 public class PubSub {
+    private static final Logger logger = LoggerFactory.getLogger(PubSub.class);
+
     public static void main(String[] args) {
         Publisher<Integer> pub = iterPub(Stream.iterate(1, a -> a + 1).limit(10).toList());
-        Publisher<Integer> mapPub = mapPub(pub, s -> s * 10);
-//        Publisher<Integer> mapPub2 = mapPub(mapPub, s -> -s);
-        Publisher<Integer> sumPub = sumPub(pub);
 
-        sumPub.subscribe(loggingSub());
-    }
-
-    private static Publisher<Integer> sumPub(Publisher<Integer> pub) {
-        return  sub -> {
-            pub.subscribe(new DelegateSub(sub) {
-                int sum = 0;
-                @Override
-                public void onNext(Integer i) {
-                    sum += i;
-                }
-
-                @Override
-                public void onComplete() {
-                    sub.onNext(sum);
-                    sub.onComplete();
-                }
-            });
-        };
+        Arrays.asList(1,2,3).forEach(examNum -> {
+            if(examNum == 1) {
+               logger.info(" ========== START EXAM 01 ==========");
+               mapPub(pub, (Function<Integer, Integer>)s -> s * 10).subscribe(loggingSub(logger));
+            }
+            if(examNum == 2) {
+               logger.info(" ========== START EXAM 02 ==========");
+               mapPub(mapPub(pub, (Function<Integer, Integer>)s -> s * 10), s -> -s).subscribe(loggingSub(logger));
+            }
+            if(examNum == 3) {
+                logger.info(" ========== START EXAM 03 ==========");
+               reducePub(pub, 0, (a, b) -> a + b).subscribe(loggingSub(logger));
+            }
+        });
     }
 
     private static Publisher<Integer> mapPub(Publisher<Integer> pub, Function<Integer, Integer> function) {
         return sub -> {
-
             pub.subscribe(new DelegateSub(sub) {
+
                 @Override
                 public void onNext(Integer i) {
-                    super.onNext(function.apply(i));
+                    sub.onNext(function.apply(i));
                 }
             });
         };
     }
 
-    private static Subscriber<Integer> loggingSub() {
-        return new Subscriber<>() {
-            @Override
-            public void onSubscribe(Subscription s) {
-                log.info("onSubscribe");
-                s.request(Long.MAX_VALUE);
-            }
+    private static Publisher<Integer> reducePub(Publisher<Integer> pub, int init, BiFunction<Integer, Integer, Integer> bf) {
+        return sub -> {
+            pub.subscribe(new DelegateSub(sub) {
+                int result = init;
 
-            @Override
-            public void onNext(Integer i) {
-                log.info("onNext : {}", i);
-            }
+                @Override
+                public void onNext(Integer i) {
+                    result = bf.apply(result, i);
+                }
 
-            @Override
-            public void onError(Throwable t) {
-                log.info("onError: {}", t);
-            }
-
-            @Override
-            public void onComplete() {
-                log.info("onComplete");
-            }
+                @Override
+                public void onComplete() {
+                    sub.onNext(result);
+                }
+            });
         };
-    }
-
-    private static Publisher<Integer> iterPub(List<Integer> iter) {
-        return sub -> sub.onSubscribe(new Subscription() {
-            @Override
-            public void request(long n) {
-                iter.forEach(sub::onNext);
-                sub.onComplete();
-            }
-
-            @Override
-            public void cancel() {}
-        });
-
     }
 }
