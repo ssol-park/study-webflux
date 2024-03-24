@@ -13,8 +13,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static com.webflux.study.exam03.PubSubUtil.iterPub;
-import static com.webflux.study.exam03.PubSubUtil.loggingSub;
+import static com.webflux.study.exam03.PubSubUtil.*;
 
 public class PubSub {
     private static final Logger logger = LoggerFactory.getLogger(PubSub.class);
@@ -25,15 +24,15 @@ public class PubSub {
         Arrays.asList(1,2,3).forEach(examNum -> {
             if(examNum == 1) {
                logger.info(" ========== START EXAM 01 ==========");
-               mapPub(pub, (Function<Integer, Integer>)s -> s * 10).subscribe(loggingSub(logger));
+               mapPub(pub, (Function<Integer, Integer>)s -> s * 10).subscribe(logSub(logger));
             }
             if(examNum == 2) {
                logger.info(" ========== START EXAM 02 ==========");
-               mapPub(mapPub(pub, (Function<Integer, Integer>)s -> s * 10), s -> -s).subscribe(loggingSub(logger));
+               mapPub(mapPub(pub, (Function<Integer, Integer>)s -> s * 10), s -> -s).subscribe(logSub(logger));
             }
             if(examNum == 3) {
                 logger.info(" ========== START EXAM 03 ==========");
-               reducePub(pub, 0, (a, b) -> a + b).subscribe(loggingSub(logger));
+               reducePub(pub, 0, (a, b) -> a + b).subscribe(logSub(logger));
             }
         });
     }

@@ -21,7 +21,7 @@ public class PubSubUtil {
         });
     }
 
-    public static <T> Subscriber<T> loggingSub(Logger logger) {
+    public static <T> Subscriber<T> logSub(Logger logger) {
         return new Subscriber<T>() {
             @Override
             public void onSubscribe(Subscription s) {
