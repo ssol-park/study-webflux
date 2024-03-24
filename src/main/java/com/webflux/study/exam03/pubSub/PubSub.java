@@ -1,19 +1,15 @@
-package com.webflux.study.exam03;
+package com.webflux.study.exam03.pubSub;
 
-import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static com.webflux.study.exam03.PubSubUtil.*;
+import static com.webflux.study.exam03.pubSub.PubSubUtil.*;
 
 public class PubSub {
     private static final Logger logger = LoggerFactory.getLogger(PubSub.class);

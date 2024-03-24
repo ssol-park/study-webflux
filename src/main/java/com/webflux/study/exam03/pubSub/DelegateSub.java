@@ -1,12 +1,13 @@
-package com.webflux.study.exam03;
+package com.webflux.study.exam03.pubSub;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-public class GenericSub<T, R> implements Subscriber<T>{
+public class DelegateSub implements Subscriber<Integer> {
+
     Subscriber sub;
 
-    public GenericSub(Subscriber<? super R> sub) {
+    public DelegateSub(Subscriber sub) {
         this.sub = sub;
     }
 
@@ -16,7 +17,7 @@ public class GenericSub<T, R> implements Subscriber<T>{
     }
 
     @Override
-    public void onNext(T i) {
+    public void onNext(Integer i) {
         sub.onNext(i);
     }
 
