@@ -14,3 +14,4 @@
 
   ## exam03
    - https://www.youtube.com/watch?v=8fenTR3KOJo&list=PLv-xDnFD-nnmof-yoZQN8Fs2kVljIuFyC&index=10
+   - https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
