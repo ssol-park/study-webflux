@@ -1,5 +1,6 @@
 package com.webflux.study.exam03.pubSub;
 
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -7,6 +8,7 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
+@Slf4j
 public class PubSubUtil {
     public static Publisher<Integer> iterPub(List<Integer> iter) {
         return sub -> sub.onSubscribe(new Subscription() {
@@ -22,27 +24,27 @@ public class PubSubUtil {
         });
     }
 
-    public static <T> Subscriber<T> logSub(Logger logger) {
+    public static <T> Subscriber<T> logSub() {
         return new Subscriber<T>() {
             @Override
             public void onSubscribe(Subscription s) {
-                logger.info("onSubscribe");
+                log.info("onSubscribe");
                 s.request(Long.MAX_VALUE);
             }
 
             @Override
             public void onNext(T i) {
-                logger.info("onNext : {}", i);
+                log.info("onNext : {}", i);
             }
 
             @Override
             public void onError(Throwable t) {
-                logger.info("onError: {}", t);
+                log.info("onError: {}", t);
             }
 
             @Override
             public void onComplete() {
-                logger.info("onComplete");
+                log.info("onComplete");
             }
         };
     }

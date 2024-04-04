@@ -20,15 +20,15 @@ public class PubSub {
         Arrays.asList(1,2,3).forEach(examNum -> {
             if(examNum == 1) {
                logger.info(" ========== START EXAM 01 ==========");
-               mapPub(pub, (Function<Integer, Integer>)s -> s * 10).subscribe(logSub(logger));
+               mapPub(pub, (Function<Integer, Integer>)s -> s * 10).subscribe(logSub());
             }
             if(examNum == 2) {
                logger.info(" ========== START EXAM 02 ==========");
-               mapPub(mapPub(pub, (Function<Integer, Integer>)s -> s * 10), s -> -s).subscribe(logSub(logger));
+               mapPub(mapPub(pub, (Function<Integer, Integer>)s -> s * 10), s -> -s).subscribe(logSub());
             }
             if(examNum == 3) {
                 logger.info(" ========== START EXAM 03 ==========");
-               reducePub(pub, 0, (a, b) -> a + b).subscribe(logSub(logger));
+               reducePub(pub, 0, (a, b) -> a + b).subscribe(logSub());
             }
         });
     }

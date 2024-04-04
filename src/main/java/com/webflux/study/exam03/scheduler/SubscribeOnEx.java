@@ -30,7 +30,7 @@ public class SubscribeOnEx {
             es.execute(() -> iterPub.subscribe(sub));
         };
 
-        Subscriber<Integer> logSub = PubSubUtil.logSub(logger);
+        Subscriber<Integer> logSub = PubSubUtil.logSub();
 
         subscribeOnPub.subscribe(logSub);
 

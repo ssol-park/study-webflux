@@ -51,7 +51,7 @@ public class PublishOnEx {
             });
         };
 
-        Subscriber<Integer> logSub = PubSubUtil.logSub(logger);
+        Subscriber<Integer> logSub = PubSubUtil.logSub();
 
         publishOnPub.subscribe(logSub);
 

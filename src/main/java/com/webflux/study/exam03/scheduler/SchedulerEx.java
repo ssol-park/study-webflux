@@ -62,7 +62,7 @@ public class SchedulerEx {
             });
         };
 
-        Subscriber<Integer> logSub = PubSubUtil.logSub(logger);
+        Subscriber<Integer> logSub = PubSubUtil.logSub();
 
         publishOnPub.subscribe(logSub);
 

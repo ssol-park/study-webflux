@@ -19,10 +19,10 @@ public class GenericPubSub {
         Arrays.asList(2).forEach(examNum -> {
             if(examNum == 1) {
                 Publisher<String> mapPub = mapPub(pub, s -> String.format("[%s]", s));
-                mapPub.subscribe(logSub(logger));
+                mapPub.subscribe(logSub());
             }
             if(examNum == 2) {
-                reducePub(pub, new StringBuilder(), (a, b) -> a.append(String.format("%d,", b))).subscribe(logSub(logger));
+                reducePub(pub, new StringBuilder(), (a, b) -> a.append(String.format("%d,", b))).subscribe(logSub());
             }
         });
     }
