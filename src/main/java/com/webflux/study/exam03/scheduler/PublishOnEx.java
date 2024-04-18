@@ -1,6 +1,6 @@
 package com.webflux.study.exam03.scheduler;
 
-import com.webflux.study.exam03.pubSub.PubSubUtil;
+import com.webflux.study.exam03.pubsub.PubSubUtil;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;

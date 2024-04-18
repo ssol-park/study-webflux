@@ -1,4 +1,4 @@
-package com.webflux.study.exam03.pubSub;
+package com.webflux.study.exam03.pubsub;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;

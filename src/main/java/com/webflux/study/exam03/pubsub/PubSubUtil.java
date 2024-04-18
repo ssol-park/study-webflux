@@ -1,10 +1,9 @@
-package com.webflux.study.exam03.pubSub;
+package com.webflux.study.exam03.pubsub;
 
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-import org.slf4j.Logger;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.webflux.study.exam03.pubSub;
+package com.webflux.study.exam03.pubsub;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static com.webflux.study.exam03.pubSub.PubSubUtil.*;
+import static com.webflux.study.exam03.pubsub.PubSubUtil.*;
 
 public class GenericPubSub {
     private static final Logger logger = LoggerFactory.getLogger(GenericPubSub.class);
