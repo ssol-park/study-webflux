@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping(value = "/posts")
+@RequestMapping("/posts")
 public class PostController {
 
     private final PostRepository postRepository;
@@ -15,7 +15,7 @@ public class PostController {
         this.postRepository = postRepository;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public Flux<Post> findAll() {
         return postRepository.findAll();
     }

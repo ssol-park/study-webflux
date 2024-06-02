@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.*;
-
 @Slf4j
 @RestController
 @RequestMapping("/web-flux")
@@ -31,13 +29,13 @@ public class WebController {
     }
 
     @GetMapping("/service")
-    public Mono<String> service(@RequestParam(name = "idx") int idx) throws InterruptedException, BrokenBarrierException {
+    public Mono<String> service(@RequestParam(name = "idx") int idx) throws InterruptedException{
         log.info("service :: {}", idx);
         return Mono.just(String.valueOf(webService.getLoad(idx)));
     }
 
     @GetMapping("/load")
-    public Mono<String> load(@RequestParam(name = "idx") int idx) throws InterruptedException, BrokenBarrierException {
+    public Mono<String> load(@RequestParam(name = "idx") int idx) {
         return Mono.just(String.valueOf(idx));
     }
 }
