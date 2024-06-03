@@ -10,7 +10,7 @@ logging:
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
     show-sql: true
     properties:
@@ -18,6 +18,6 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
   datasource:
-    url: jdbc:mysql://localhost:3306/study_batch?serverTimezone=Asia/Seoul
-    username: root
-    password: admin
+    url: jdbc:mysql://localhost:3306/study?serverTimezone=Asia/Seoul
+    username: srpark
+    password: '!@#QWE123qwe'
