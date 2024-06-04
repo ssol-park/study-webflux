@@ -8,9 +8,10 @@ services:
       MYSQL_USER: srpark
       MYSQL_PASSWORD: "!@#QWE123qwe"
     ports:
-      - "3306:3306"
+      - "13306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
   db_data:
