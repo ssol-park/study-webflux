@@ -10,7 +10,7 @@ logging:
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
     show-sql: true
     properties:
@@ -18,6 +18,13 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
   datasource:
-    url: jdbc:mysql://localhost:3306/study_batch?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:13306/study?serverTimezone=Asia/Seoul
     username: root
     password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 10
+      validation-timeout: 5000
+      connection-init-sql: SELECT 1
