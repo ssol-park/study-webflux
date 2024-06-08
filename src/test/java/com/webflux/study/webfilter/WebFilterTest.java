@@ -7,12 +7,14 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@WebFluxTest(controllers = PostController.class)
+@WebFluxTest(controllers = RouterConfig.class)
 class WebFilterTest {
 
     @Autowired
     private WebTestClient webTestClient;
 
+    @MockBean
+    private PostHandler postHandler;
     @MockBean
     private PostRepository postRepository;
 
