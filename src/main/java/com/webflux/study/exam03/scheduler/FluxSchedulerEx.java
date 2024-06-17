@@ -17,13 +17,13 @@ import java.util.concurrent.TimeUnit;
 public class FluxSchedulerEx {
     public static void main(String[] args) throws InterruptedException {
 
-        int examNum = 3;
+        int examNum = 1;
 
         if(examNum == 1) {
             Flux.range(0, 5)
                     .publishOn(Schedulers.newSingle("pubOn-"))
                     .log()
-//                .subscribeOn(Schedulers.newSingle("subOn-"))
+                    .subscribeOn(Schedulers.newSingle("subOn-"))
                     .subscribe(System.out::println)
             ;
             log.info("exam-1 exit");

@@ -1,6 +1,7 @@
 package com.webflux.study.exam03.scheduler;
 
 import com.webflux.study.exam03.pubsub.PubSubUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -16,9 +17,9 @@ import java.util.concurrent.Executors;
  * Typically used for fast publisher, slow consumer(s) scenarios.
  * 퍼블리셔는 빠르지만 작업을 실행, 전달 하는 sub 이 느린 경우 사용 --> subscriber 를 별개의 쓰레드에서 동작하도록 함
  * */
+@Slf4j
 public class PublishOnEx {
     public static void main(String[] args) {
-        Logger logger = LoggerFactory.getLogger(PublishOnEx.class);
 
         List<Integer> list = Arrays.asList(1,2,3,4,5);
 
@@ -55,6 +56,6 @@ public class PublishOnEx {
 
         publishOnPub.subscribe(logSub);
 
-        logger.info("exit");
+        log.info("exit");
     }
 }

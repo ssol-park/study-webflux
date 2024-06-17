@@ -13,7 +13,7 @@ public class PubSubUtil {
         return sub -> sub.onSubscribe(new Subscription() {
             @Override
             public void request(long n) {
-                System.out.println("request()");
+                log.info("request()");
                 iter.forEach(sub::onNext);
                 sub.onComplete();
             }
