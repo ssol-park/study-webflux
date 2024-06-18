@@ -1,5 +1,9 @@
 package com.webflux.study.exam03.scheduler.subon;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -43,6 +47,7 @@ public class RequestApplication {
     @Slf4j
     @Service
     public static class ApiService {
+        private ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         private final WebClient webClient;
         private final Map<String, ResponseDto> responseMap = new ConcurrentHashMap<>();
 
@@ -50,17 +55,18 @@ public class RequestApplication {
             this.webClient = webClientBuilder.baseUrl("https://jsonplaceholder.typicode.com").build();
         }
 
-        public Flux<ResponseDto> getData() {
+        public Flux<String> getData() {
 
             List<String> endpoints = IntStream.rangeClosed(1, 10)
-                    .mapToObj(i -> "/posts/" + 1)
-                    .collect(Collectors.toList());
+                    .mapToObj(i -> "/posts/" + i)
+                    .collect(Collectors.toList())
+                    ;
 
             return Flux.fromIterable(endpoints)
                     .flatMap(endpoint -> webClient.get()
                             .uri(endpoint)
                             .retrieve()
-                            .bodyToMono(ResponseDto.class)
+                            .bodyToMono(String.class)
                             .subscribeOn(Schedulers.boundedElastic())
                     );
         }
@@ -71,7 +77,7 @@ public class RequestApplication {
             return data
                     .doOnNext(res -> {
                         String key = "id_" + res.getId();
-                        if(responseMap.putIfAbsent(key, res) == null)   // 동시성 처리
+                        if(responseMap.putIfAbsent(key, res) == null)
                             counter.incrementAndGet();
                     })
                     .then(Mono.fromCallable(counter::get));
@@ -79,11 +85,22 @@ public class RequestApplication {
 
         public Mono<Void> fetchAndStoreData() {
 
-            Flux<ResponseDto> data = getData();
+            Flux<ResponseDto> data = getData()
+                    .publishOn(Schedulers.parallel())
+                    .map(json -> convertToDto(json, new TypeReference<ResponseDto>() {}));
 
             return saveData(data)
-                    .doOnSuccess(info -> log.info("cnt : {}, resultMap : {}", info, responseMap))
+                    .doOnSuccess(saveCnt -> log.info("doOnSuccess ::: saveCnt:{}, responseMap:{}", saveCnt, responseMap))
                     .then();
+
+        }
+
+        private <T> T convertToDto(String json, TypeReference<T> typeReference) {
+            try {
+                return objectMapper.readValue(json, typeReference);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Error converting json to dto", e);
+            }
         }
     }
 
