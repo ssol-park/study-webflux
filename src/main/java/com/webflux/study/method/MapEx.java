@@ -48,7 +48,6 @@ public class MapEx {
     public static void webFluxFlatMap() {
         log.info("start webFluxFlatMap()");
 
-        Flux<String> sentences = Flux.just("A B", "C D", "E F", "G H");
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger counter = new AtomicInteger(1);
 
@@ -58,13 +57,17 @@ public class MapEx {
 
         long startTime = System.nanoTime();
 
-        Flux<String> words = sentences.flatMap(sentence ->
+        Flux<String> sentences = Flux.just("A B", "C D", "E F", "G H")
+                .subscribeOn(scheduler)
+                .log()
+                .flatMap(sentence ->
                     Flux.fromArray(sentence.split(" "))
                             .delayElements(Duration.ofMillis(500))
-                            .publishOn(scheduler)
-                );
+                            .log()
+                )
+                ;
 
-        words.doOnComplete(() -> {
+        sentences.doOnComplete(() -> {
             long duration = (System.nanoTime() - startTime) / 1000000;
             log.info("webFluxFlatMap Execution Time {}", duration);
             latch.countDown();
