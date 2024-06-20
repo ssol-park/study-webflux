@@ -2,14 +2,15 @@ package com.webflux.study.method;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /*
 * Stream
@@ -23,15 +24,17 @@ import java.util.stream.Stream;
 @Slf4j
 public class MapEx {
     public static void main(String[] args) {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-        Thread streamThread = new Thread(MapEx::streamFlatMap);
-        streamThread.setName("thread-streamFlatMap");
+        CompletableFuture<Void> streamFuture = CompletableFuture.runAsync(MapEx::streamFlatMap, executorService);
+        CompletableFuture<Void> webFluxFuture = CompletableFuture.runAsync(MapEx::webFluxFlatMap, executorService);
 
-        Thread webFluxThread = new Thread(MapEx::webFluxFlatMap);
-        webFluxThread.setName("thread-webFluxFlatMap");
+        CompletableFuture.allOf(streamFuture, webFluxFuture)
+                .thenRun(() -> {
+                    log.info("all task completed.");
+                    executorService.shutdown();
+                });
 
-        streamThread.start();
-        webFluxThread.start();
 
         try {
             Thread.sleep(5000);
@@ -43,22 +46,27 @@ public class MapEx {
     }
 
     public static void webFluxFlatMap() {
-        log.info("============= START =============");
+        log.info("start webFluxFlatMap()");
 
-        Flux<String> sentences = Flux.just("AB CD", "EF GH");
+        Flux<String> sentences = Flux.just("A B", "C D", "E F", "G H");
         CountDownLatch latch = new CountDownLatch(1);
+        AtomicInteger counter = new AtomicInteger(1);
+
+        ExecutorService fluxEs = Executors.newFixedThreadPool(2, r -> new Thread(r, "webflux-pool-" + counter.incrementAndGet()));
+
+        Scheduler scheduler = Schedulers.fromExecutorService(fluxEs);
 
         long startTime = System.nanoTime();
 
         Flux<String> words = sentences.flatMap(sentence ->
                     Flux.fromArray(sentence.split(" "))
                             .delayElements(Duration.ofMillis(500))
-                            .subscribeOn(Schedulers.parallel())
+                            .publishOn(scheduler)
                 );
 
         words.doOnComplete(() -> {
-            long duration = (System.nanoTime() - startTime);
-            log.info("webFluxFlatMap Execution Nano Time {}", duration);
+            long duration = (System.nanoTime() - startTime) / 1000000;
+            log.info("webFluxFlatMap Execution Time {}", duration);
             latch.countDown();
         }).subscribe(
                 res -> log.info("{}", res),
@@ -70,34 +78,29 @@ public class MapEx {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        log.info("============= End =============");
     }
 
     public static void streamFlatMap() {
-        log.info("============= START =============");
+        log.info("start streamFlatMap()");
 
-        List<String> sentences = Arrays.asList("AB CD", "EF GH");
+        List<String> sentences = Arrays.asList("A B", "C D", "E F", "G H");
 
         long startTime = System.nanoTime();
 
         sentences.stream()
                 .flatMap(sentence -> {
                     try {
-                        Thread.sleep(500);
+                        log.info("Sleep ....");
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
 
-                    Stream<String> splitSentences = Arrays.stream(sentence.split(" "));
-                    log.info("??? {}", splitSentences);
-
-                    return splitSentences;
+                    return Arrays.stream(sentence.split(" "));
                 }).collect(Collectors.toList());
 
-        long duration = (System.nanoTime() - startTime);
+        long duration = (System.nanoTime() - startTime) / 1000000;
 
-        log.info("streamFlatMap Execution Nano Time {}", duration);
-        log.info("============= End =============");
+        log.info("streamFlatMap Execution Time {}", duration);
     }
 }
