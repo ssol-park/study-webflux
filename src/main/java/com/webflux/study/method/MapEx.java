@@ -57,24 +57,34 @@ public class MapEx {
 
         long startTime = System.nanoTime();
 
+        /*
+          // 구독 시작
+          11:23:13.266 [pool-1-thread-2] INFO reactor.Flux.SubscribeOn.1 -- onSubscribe(FluxSubscribeOn.SubscribeOnSubscriber)
+          // 구독자 -> 발행자 데이터 요청
+          11:23:13.267 [pool-1-thread-2] INFO reactor.Flux.SubscribeOn.1 -- request(256)
+          // 발행자 -> 구독자 데이터 A B 전달
+          11:23:13.270 [webflux-pool-2] INFO reactor.Flux.SubscribeOn.1 -- onNext(A B)
+        * */
         Flux<String> sentences = Flux.just("A B", "C D", "E F", "G H")
-                .subscribeOn(scheduler)
+                .subscribeOn(scheduler) // 2. 구독 시 사용할 스케줄러
                 .log()
                 .flatMap(sentence ->
                     Flux.fromArray(sentence.split(" "))
-                            .delayElements(Duration.ofMillis(500))
+                            .delayElements(Duration.ofMillis(500)) // delayElements 는 내부적으로 parallel 쓰레드를 사용
                             .log()
-                )
-                ;
+                );
 
-        sentences.doOnComplete(() -> {
-            long duration = (System.nanoTime() - startTime) / 1000000;
-            log.info("webFluxFlatMap Execution Time {}", duration);
-            latch.countDown();
-        }).subscribe(
-                res -> log.info("{}", res),
-                err -> log. error("{}", err)
-        );
+        sentences.collectList()
+                .doOnSuccess(list -> {
+                    log.info("doOnSuccess : {}", list);
+                    log.info("webFluxFlatMap Execution Time {}", (System.nanoTime() - startTime) / 1000000);
+
+                    latch.countDown();
+                })
+                .doOnError(err -> {
+                    log.error("doOnError : {}", err);
+                    latch.countDown();
+                }).subscribe(); // 1. 구독 시작
 
         try {
             latch.await();
