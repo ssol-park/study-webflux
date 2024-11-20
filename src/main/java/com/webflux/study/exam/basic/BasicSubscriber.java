@@ -1,5 +1,6 @@
 package com.webflux.study.exam.basic;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -8,10 +9,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
+@Getter
 public class BasicSubscriber implements Subscriber<Integer> {
 
     private Subscription subscription;
     private final AtomicInteger receivedCnt = new AtomicInteger(0);
+    private final AtomicInteger errorCnt = new AtomicInteger(0);
     private final AtomicBoolean isCompleted = new AtomicBoolean(false);
 
     @Override
@@ -36,6 +39,7 @@ public class BasicSubscriber implements Subscriber<Integer> {
     @Override
     public void onError(Throwable t) {
         log.error("[BasicSubscriber] onError :: {}", t.getMessage(), t);
+        errorCnt.incrementAndGet();
     }
 
     @Override
@@ -50,5 +54,16 @@ public class BasicSubscriber implements Subscriber<Integer> {
 
     public boolean isCompleted() {
         return isCompleted.get();
+    }
+
+    public void cancelSubscription() {
+        if (subscription != null) {
+            log.info("[BasicSubscriber] 구독 취소 요청");
+            subscription.cancel();
+        }
+    }
+
+    public int getErrorCnt() {
+        return errorCnt.get();
     }
 }

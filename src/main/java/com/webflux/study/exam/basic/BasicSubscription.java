@@ -18,12 +18,23 @@ public class BasicSubscription implements Subscription {
 
     @Override
     public void request(long n) {
+
         for (int i = 0; i < n; i++) {
-            if (isCanceled.get()) return;
+            if (isCanceled.get()) {
+                log.info("[BasicSubscription] 구독 중인 상태가 아님");
+                return;
+            }
 
             int currentData = data.getAndIncrement();
 
-            subscriber.onNext(currentData);
+            try {
+                subscriber.onNext(currentData);
+            } catch (Exception e) {
+                subscriber.onError(e);
+                isCanceled.set(true);
+                return;
+            }
+
 
             if (currentData == 4) {
                 subscriber.onComplete();
@@ -35,6 +46,6 @@ public class BasicSubscription implements Subscription {
     @Override
     public void cancel() {
         isCanceled.set(true);
-        log.info("[BasicSubscription] 구독 취소");
+        log.info("[BasicSubscription] 구독 취소 완료");
     }
 }
