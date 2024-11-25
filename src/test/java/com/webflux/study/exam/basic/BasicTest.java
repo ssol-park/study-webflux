@@ -2,10 +2,14 @@ package com.webflux.study.exam.basic;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BasicTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(BasicTest.class);
 
     @Test
     @DisplayName("기본적인 Reactive Stream 동작 테스트")
@@ -59,4 +63,39 @@ class BasicTest {
         assertThat(sub.getErrorCnt()).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("재시도 테스트")
+    void testRetry() {
+        BasicPublisher pub = new BasicPublisher();
+        BasicSubscriber sub = new BasicSubscriber() {
+            private int retryCnt = 0;
+            private final int maxRetryCnt = 3;
+
+            @Override
+            public void onNext(Integer item) {
+                super.onNext(item);
+
+                if (item == 3 && retryCnt < maxRetryCnt) {
+                    retryCnt++;
+                    logger.info("[BasicSubscriber] 재시도 횟수: {}", retryCnt);
+                    throw new RuntimeException("#### 에러 발생: " + item);
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                super.onError(t);
+
+                if (retryCnt < maxRetryCnt) {
+                    logger.info("[BasicSubscriber] 재시도 요청 시작");
+                    getSubscription().request(1);
+                }
+            }
+        };
+
+        pub.subscribe(sub);
+
+        // 최초 오류 + 3회 재시도
+        assertThat(sub.getErrorCnt()).isEqualTo(4);
+    }
 }

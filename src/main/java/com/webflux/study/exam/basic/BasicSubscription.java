@@ -35,7 +35,6 @@ public class BasicSubscription implements Subscription {
                 return;
             }
 
-
             if (currentData == 4) {
                 subscriber.onComplete();
                 return;
